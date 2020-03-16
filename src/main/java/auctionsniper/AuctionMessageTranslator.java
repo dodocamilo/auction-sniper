@@ -1,5 +1,6 @@
 package auctionsniper;
 
+import auctionsniper.AuctionEventListener.PriceSource;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
@@ -7,11 +8,16 @@ import org.jivesoftware.smack.packet.Message;
 import java.util.HashMap;
 import java.util.Map;
 
+import static auctionsniper.AuctionEventListener.PriceSource.FromOtherBidder;
+import static auctionsniper.AuctionEventListener.PriceSource.FromSniper;
+
 public class AuctionMessageTranslator implements MessageListener {
 
+    private final String sniperId;
     private final AuctionEventListener listener;
 
-    public AuctionMessageTranslator(AuctionEventListener listener) {
+    public AuctionMessageTranslator(String sniperId, AuctionEventListener listener) {
+        this.sniperId = sniperId;
         this.listener = listener;
     }
 
@@ -23,7 +29,7 @@ public class AuctionMessageTranslator implements MessageListener {
         if ("CLOSE".equals(type)) {
             listener.auctionClosed();
         } else if ("PRICE".equals(type)) {
-            listener.currentPrice(event.currentPrice(), event.increment());
+            listener.currentPrice(event.currentPrice(), event.increment(), event.isFrom(sniperId));
         }
     }
 
@@ -50,6 +56,10 @@ public class AuctionMessageTranslator implements MessageListener {
             return getInt("Increment");
         }
 
+        public PriceSource isFrom(String sniperId) {
+            return sniperId.equals(bidder()) ? FromSniper : FromOtherBidder;
+        }
+
         private int getInt(String fieldName) {
             return Integer.parseInt(fields.get(fieldName));
         }
@@ -63,8 +73,12 @@ public class AuctionMessageTranslator implements MessageListener {
             fields.put(pair[0].trim(), pair[1].trim());
         }
 
-        static String[] fieldsIn(String messageBody) {
+        private static String[] fieldsIn(String messageBody) {
             return messageBody.split(";");
+        }
+
+        private String bidder() {
+            return get("Bidder");
         }
     }
 }
