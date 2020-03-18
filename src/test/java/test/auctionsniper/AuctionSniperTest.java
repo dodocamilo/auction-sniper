@@ -4,8 +4,7 @@ import auctionsniper.*;
 import auctionsniper.AuctionEventListener.PriceSource;
 import org.junit.jupiter.api.Test;
 
-import static auctionsniper.SniperState.BIDDING;
-import static auctionsniper.SniperState.WINNING;
+import static auctionsniper.SniperState.*;
 import static org.mockito.Mockito.*;
 
 public class AuctionSniperTest {
@@ -19,7 +18,7 @@ public class AuctionSniperTest {
     void reportsLostIfAuctionClosesImmediately() {
         sniper.auctionClosed();
 
-        verify(sniperListener, times(1)).sniperLost();
+        verify(sniperListener).sniperStateChanged(new SniperSnapshot(ITEM_ID, 0, 0, LOST));
     }
 
     @Test
@@ -27,16 +26,16 @@ public class AuctionSniperTest {
         sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
         sniper.auctionClosed();
 
-        verify(sniperListener).sniperLost();
-        verify(sniperListener).sniperStateChanged(any(SniperSnapshot.class));
+        verify(sniperListener, atLeast(1)).sniperStateChanged(new SniperSnapshot(ITEM_ID, 123, 123 + 45, LOST));
     }
 
     @Test
     void reportsWonIfAuctionClosesWhenWinning() {
-        sniper.currentPrice(123, 45, PriceSource.FromSniper);
+        sniper.currentPrice(123, 12, PriceSource.FromOtherBidder);
+        sniper.currentPrice(135, 45, PriceSource.FromSniper);
         sniper.auctionClosed();
 
-        verify(sniperListener).sniperWon();
+        verify(sniperListener).sniperStateChanged(new SniperSnapshot(ITEM_ID, 135, 135, WON));
     }
 
     @Test

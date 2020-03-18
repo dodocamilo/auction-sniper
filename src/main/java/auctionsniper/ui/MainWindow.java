@@ -30,10 +30,6 @@ public class MainWindow extends JFrame {
         setVisible(true);
     }
 
-    public void showStatusText(String statusText) {
-        snipers.setStatusText(statusText);
-    }
-
     private void fillContentPane(JTable snipersTable) {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -56,9 +52,10 @@ public class MainWindow extends JFrame {
         private static final String[] STATUS_TEXT  = {
             MainWindow.STATUS_JOINING,
             MainWindow.STATUS_BIDDING,
-            MainWindow.STATUS_WINNING
+            MainWindow.STATUS_WINNING,
+            MainWindow.STATUS_LOST,
+            MainWindow.STATUS_WON
         };
-        private String state = STATUS_JOINING;
         private SniperSnapshot snapshot = STARTING_UP;
 
         @Override
@@ -81,21 +78,19 @@ public class MainWindow extends JFrame {
                 case LAST_BID:
                     return snapshot.lastBid;
                 case SNIPER_STATE:
-                    return state;
+                    return textFor(snapshot.state);
                 default:
                     throw new IllegalArgumentException("No column at " + columnIndex);
             }
         }
 
-        public void setStatusText(String newStatusText) {
-            this.state = newStatusText;
+        public void sniperStatusChanged(SniperSnapshot newSniperSnapshot) {
+            this.snapshot = newSniperSnapshot;
             fireTableRowsUpdated(0, 0);
         }
 
-        public void sniperStatusChanged(SniperSnapshot newSniperSnapshot) {
-            this.snapshot = newSniperSnapshot;
-            this.state = STATUS_TEXT[newSniperSnapshot.state.ordinal()];
-            fireTableRowsUpdated(0, 0);
+        private String textFor(SniperState state) {
+            return STATUS_TEXT[state.ordinal()];
         }
     }
 }
