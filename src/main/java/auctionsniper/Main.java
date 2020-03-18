@@ -81,10 +81,6 @@ public class Main {
             SwingUtilities.invokeLater(() -> ui.sniperStateChanged(snapshot));
         }
 
-        public void sniperWinning() {
-            showStatus(MainWindow.STATUS_WINNING);
-        }
-
         @Override
         public void sniperWon() {
             showStatus(MainWindow.STATUS_WON);

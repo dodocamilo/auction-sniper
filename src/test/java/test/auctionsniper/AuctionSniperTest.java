@@ -5,6 +5,7 @@ import auctionsniper.AuctionEventListener.PriceSource;
 import org.junit.jupiter.api.Test;
 
 import static auctionsniper.SniperState.BIDDING;
+import static auctionsniper.SniperState.WINNING;
 import static org.mockito.Mockito.*;
 
 public class AuctionSniperTest {
@@ -31,7 +32,7 @@ public class AuctionSniperTest {
     }
 
     @Test
-    public void reportsWonIfAuctionClosesWhenWinning() {
+    void reportsWonIfAuctionClosesWhenWinning() {
         sniper.currentPrice(123, 45, PriceSource.FromSniper);
         sniper.auctionClosed();
 
@@ -52,8 +53,10 @@ public class AuctionSniperTest {
 
     @Test
     void reportsIsWinningWhenCurrentPriceComesFromSniper() {
-        sniper.currentPrice(123, 45, PriceSource.FromSniper);
+        sniper.currentPrice(123, 12, PriceSource.FromOtherBidder);
+        sniper.currentPrice(135, 45, PriceSource.FromSniper);
 
-        verify(sniperListener, times(1)).sniperWinning();
+        verify(sniperListener, times(1))
+                .sniperStateChanged(new SniperSnapshot(ITEM_ID, 135, 135, WINNING));
     }
 }
