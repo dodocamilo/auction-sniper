@@ -1,12 +1,10 @@
 package test.auctionsniper;
 
-import auctionsniper.Auction;
+import auctionsniper.*;
 import auctionsniper.AuctionEventListener.PriceSource;
-import auctionsniper.AuctionSniper;
-import auctionsniper.SniperListener;
-import auctionsniper.SniperState;
 import org.junit.jupiter.api.Test;
 
+import static auctionsniper.SniperState.BIDDING;
 import static org.mockito.Mockito.*;
 
 public class AuctionSniperTest {
@@ -29,7 +27,7 @@ public class AuctionSniperTest {
         sniper.auctionClosed();
 
         verify(sniperListener).sniperLost();
-        verify(sniperListener).sniperBidding(any(SniperState.class));
+        verify(sniperListener).sniperStateChanged(any(SniperSnapshot.class));
     }
 
     @Test
@@ -49,7 +47,7 @@ public class AuctionSniperTest {
         sniper.currentPrice(price, increment, PriceSource.FromOtherBidder);
 
         verify(auction).bid(bid);
-        verify(sniperListener, times(1)).sniperBidding(new SniperState(ITEM_ID, price, bid));
+        verify(sniperListener, times(1)).sniperStateChanged(new SniperSnapshot(ITEM_ID, price, bid, BIDDING));
     }
 
     @Test
