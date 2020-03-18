@@ -10,13 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static endtoend.auctionsniper.ApplicationRunner.SNIPER_ID;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class AuctionMessageTranslatorTest {
-
+    private static final String SNIPER_ID = "sniper id";
     private static final Chat UNUSED_CHAT = null;
     private AuctionEventListener listener = mock(AuctionEventListener.class);
     private final AuctionMessageTranslator translator = new AuctionMessageTranslator(SNIPER_ID, listener);
