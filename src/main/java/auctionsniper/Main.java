@@ -1,6 +1,7 @@
 package auctionsniper;
 
 import auctionsniper.ui.MainWindow;
+import auctionsniper.ui.MainWindow.SnipersTableModel;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -21,11 +22,12 @@ public class Main {
     public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
     public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;";
 
+    private final SnipersTableModel snipers = new SnipersTableModel();
     private MainWindow ui;
     private Chat notToBeGCd;
 
     public Main() throws Exception {
-        startUserInterface();
+        SwingUtilities.invokeAndWait(() -> ui = new MainWindow(snipers));
     }
 
     public static void main(String... args) throws Exception {
@@ -43,7 +45,9 @@ public class Main {
 
         Auction auction = new XMPPAuction(chat);
 
-        chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(itemId, auction, new SniperStateDisplayer())));
+        chat.addMessageListener(
+                new AuctionMessageTranslator(connection.getUser(),
+                        new AuctionSniper(itemId, auction, new SwingThreadSniperListener(snipers))));
         auction.join();
     }
 
@@ -68,13 +72,15 @@ public class Main {
         return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName());
     }
 
-    private void startUserInterface() throws Exception {
-        SwingUtilities.invokeAndWait(() -> ui = new MainWindow());
-    }
+    public class SwingThreadSniperListener implements SniperListener {
+        private final SniperListener delegate;
 
-    private class SniperStateDisplayer implements SniperListener {
+        public SwingThreadSniperListener(SniperListener delegate) {
+            this.delegate = delegate;
+        }
+
         public void sniperStateChanged(SniperSnapshot snapshot) {
-            SwingUtilities.invokeLater(() -> ui.sniperStateChanged(snapshot));
+            SwingUtilities.invokeLater(() -> delegate.sniperStateChanged(snapshot));
         }
     }
 }

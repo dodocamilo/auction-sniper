@@ -1,6 +1,7 @@
 package auctionsniper.ui;
 
 import auctionsniper.Column;
+import auctionsniper.SniperListener;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
 
@@ -10,19 +11,15 @@ import java.awt.*;
 
 public class MainWindow extends JFrame {
 
-    private static final String APPLICATION_TITLE = "Auction Sniper";
+    public static final String APPLICATION_TITLE = "Auction Sniper";
     public static final String MAIN_WINDOW_NAME = "Auction Sniper Main";
-    public static final String STATUS_JOINING = "Joining";
-    public static final String STATUS_LOST = "Lost";
-    public static final String STATUS_BIDDING = "Bidding";
-    public static final String STATUS_WINNING = "Winning";
-    public static final String STATUS_WON = "Won";
     private static final String SNIPERS_TABLE_NAME = "Snipers Table";
 
-    private final SnipersTableModel snipers = new SnipersTableModel();
+    private final SnipersTableModel snipers;
 
-    public MainWindow() {
+    public MainWindow(SnipersTableModel snipers) {
         super(APPLICATION_TITLE);
+        this.snipers = snipers;
         setName(MAIN_WINDOW_NAME);
         fillContentPane(makeSnipersTable());
         pack();
@@ -43,18 +40,10 @@ public class MainWindow extends JFrame {
         return snipersTable;
     }
 
-    public void sniperStateChanged(SniperSnapshot snapshot) {
-        snipers.sniperStatusChanged(snapshot);
-    }
-
-    public static class SnipersTableModel extends AbstractTableModel {
+    public static class SnipersTableModel extends AbstractTableModel implements SniperListener {
         private static final SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0, SniperState.JOINING);
         private static final String[] STATUS_TEXT  = {
-            MainWindow.STATUS_JOINING,
-            MainWindow.STATUS_BIDDING,
-            MainWindow.STATUS_WINNING,
-            MainWindow.STATUS_LOST,
-            MainWindow.STATUS_WON
+            "Joining", "Bidding", "Winning", "Lost", "Won"
         };
         private SniperSnapshot snapshot = STARTING_UP;
 
@@ -70,26 +59,21 @@ public class MainWindow extends JFrame {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            switch (Column.at(columnIndex)) {
-                case ITEM_IDENTIFIER:
-                    return snapshot.itemId;
-                case LAST_PRICE:
-                    return snapshot.lastPrice;
-                case LAST_BID:
-                    return snapshot.lastBid;
-                case SNIPER_STATE:
-                    return textFor(snapshot.state);
-                default:
-                    throw new IllegalArgumentException("No column at " + columnIndex);
-            }
+            return Column.at(columnIndex).valueIn(snapshot);
         }
 
-        public void sniperStatusChanged(SniperSnapshot newSniperSnapshot) {
+        @Override
+        public String getColumnName(int column) {
+            return Column.at(column).name;
+        }
+
+        @Override
+        public void sniperStateChanged(SniperSnapshot newSniperSnapshot) {
             this.snapshot = newSniperSnapshot;
             fireTableRowsUpdated(0, 0);
         }
 
-        private String textFor(SniperState state) {
+        public static String textFor(SniperState state) {
             return STATUS_TEXT[state.ordinal()];
         }
     }
