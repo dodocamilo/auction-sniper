@@ -35,27 +35,23 @@ public class Main {
         Main main = new Main();
         XMPPConnection connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]);
         main.disconnectWhenUICloses(connection);
-
-        for (int i = 3; i < args.length; i++) {
-            main.joinAuction(connection, args[i]);
-        }
+        main.addUserRequestListenerFor(connection);
     }
 
-    private void joinAuction(XMPPConnection connection, String itemId) throws Exception {
-        safelyAddItemToModel(itemId);
-        Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection), null);
-        this.notToBeGCd.add(chat);
+    private void addUserRequestListenerFor(XMPPConnection connection) {
+        ui.addUserRequestListener(new UserRequestListener() {
+            public void joinAuction(String itemId) {
+                snipers.addSniper(SniperSnapshot.joining(itemId));
+                Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection), null);
 
-        Auction auction = new XMPPAuction(chat);
+                notToBeGCd.add(chat);
 
-        chat.addMessageListener(
-                new AuctionMessageTranslator(connection.getUser(),
+                XMPPAuction auction = new XMPPAuction(chat);
+                chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(),
                         new AuctionSniper(itemId, auction, new SwingThreadSniperListener(snipers))));
-        auction.join();
-    }
-
-    private void safelyAddItemToModel(String itemId) throws Exception {
-        SwingUtilities.invokeAndWait(() -> snipers.addSniper(SniperSnapshot.joining(itemId)));
+                auction.join();
+            }
+        });
     }
 
     private void disconnectWhenUICloses(XMPPConnection connection) {

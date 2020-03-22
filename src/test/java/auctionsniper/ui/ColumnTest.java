@@ -1,6 +1,6 @@
-package test.auctionsniper;
+package auctionsniper.ui;
 
-import auctionsniper.Column;
+import auctionsniper.ui.Column;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
 import org.junit.jupiter.api.Test;

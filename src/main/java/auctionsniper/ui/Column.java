@@ -1,6 +1,6 @@
-package auctionsniper;
+package auctionsniper.ui;
 
-import auctionsniper.ui.SnipersTableModel;
+import auctionsniper.SniperSnapshot;
 
 public enum Column {
     ITEM_IDENTIFIER("Item") {

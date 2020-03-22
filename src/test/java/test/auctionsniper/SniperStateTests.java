@@ -1,6 +1,6 @@
 package test.auctionsniper;
 
-import auctionsniper.Defect;
+import auctionsniper.util.Defect;
 import auctionsniper.SniperState;
 import org.junit.jupiter.api.Test;
 

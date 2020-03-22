@@ -8,8 +8,6 @@ import com.objogate.wl.swing.gesture.GesturePerformer;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 
-import java.awt.*;
-
 import static auctionsniper.ui.MainWindow.MAIN_WINDOW_NAME;
 import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching;
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;

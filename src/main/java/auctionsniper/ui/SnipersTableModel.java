@@ -1,6 +1,7 @@
 package auctionsniper.ui;
 
 import auctionsniper.*;
+import auctionsniper.util.Defect;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;

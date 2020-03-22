@@ -1,7 +1,7 @@
-package test.auctionsniper;
+package auctionsniper.ui;
 
-import auctionsniper.Column;
-import auctionsniper.Defect;
+import auctionsniper.ui.Column;
+import auctionsniper.util.Defect;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
 import auctionsniper.ui.SnipersTableModel;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import static auctionsniper.ui.SnipersTableModel.textFor;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
