@@ -1,4 +1,4 @@
-package test.auctionsniper;
+package auctionsniper;
 
 import auctionsniper.util.Defect;
 import auctionsniper.SniperState;

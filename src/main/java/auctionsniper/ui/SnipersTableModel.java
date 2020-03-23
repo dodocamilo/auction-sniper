@@ -7,7 +7,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, PortfolioListener {
     private static final String[] STATUS_TEXT  = {
         "Joining", "Bidding", "Winning", "Lost", "Won"
     };
@@ -53,8 +53,14 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         return STATUS_TEXT[state.ordinal()];
     }
 
-    public void addSniper(SniperSnapshot joining) {
-        snapshots.add(joining);
+    @Override
+    public void sniperAdded(AuctionSniper sniper) {
+        addSniperSnapshot(sniper.getSnapshot());
+        sniper.addSniperListener(new SwingThreadSniperListener(this));
+    }
+
+    private void addSniperSnapshot(SniperSnapshot sniperSnapshot) {
+        snapshots.add(sniperSnapshot);
         int row = snapshots.size() - 1;
         fireTableRowsUpdated(row, row);
     }

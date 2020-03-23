@@ -1,7 +1,7 @@
-package test.auctionsniper;
+package auctionsniper;
 
-import auctionsniper.*;
 import auctionsniper.AuctionEventListener.PriceSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static auctionsniper.SniperState.*;
@@ -12,7 +12,12 @@ public class AuctionSniperTest {
 
     private SniperListener sniperListener = mock(SniperListener.class);
     private Auction auction = mock(Auction.class);
-    private AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction, sniperListener);
+    private AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction);
+
+    @BeforeEach
+    void attachListener() {
+        sniper.addSniperListener(sniperListener);
+    }
 
     @Test
     void reportsLostIfAuctionClosesImmediately() {

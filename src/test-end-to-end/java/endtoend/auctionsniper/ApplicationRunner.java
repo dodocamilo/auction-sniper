@@ -5,16 +5,16 @@ import auctionsniper.SniperState;
 
 import static auctionsniper.ui.MainWindow.*;
 import static auctionsniper.ui.SnipersTableModel.textFor;
-import static endtoend.auctionsniper.FakeAuctionServer.XMPP_HOSTNAME;
 
 public class ApplicationRunner {
+    public static final String XMPP_HOSTNAME = "localhost";
     public static final String SNIPER_ID = "sniper";
     public static final String SNIPER_PASSWORD = "sniper";
     public static final String SNIPER_XMPP_ID = SNIPER_ID + "@" + XMPP_HOSTNAME + "/Auction";
     private AuctionSniperDriver driver;
 
     public void startBiddingIn(FakeAuctionServer... auctions) {
-        startSniper(auctions);
+        startSniper();
         for (FakeAuctionServer auction : auctions) {
             String itemId = auction.getItemId();
             driver.startBiddingFor(itemId);
@@ -22,12 +22,12 @@ public class ApplicationRunner {
         }
     }
 
-    private void startSniper(FakeAuctionServer[] auctions) {
+    private void startSniper() {
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
                 try {
-                    Main.main(arguments(auctions));
+                    Main.main(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -35,6 +35,7 @@ public class ApplicationRunner {
         };
         thread.setDaemon(true);
         thread.start();
+
         driver = new AuctionSniperDriver(1000);
         driver.hasTitle(APPLICATION_TITLE);
         driver.hasColumnTitles();
