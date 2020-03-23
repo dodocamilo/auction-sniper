@@ -5,22 +5,22 @@ import auctionsniper.util.Defect;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SnipersTableModel extends AbstractTableModel implements SniperListener, PortfolioListener {
-    private static final String[] STATUS_TEXT  = {
-        "Joining", "Bidding", "Winning", "Lost", "Won"
+    private static String[] STATUS_TEXT  = {
+            "Joining", "Bidding", "Winning", "Lost", "Won"
     };
-    private List<SniperSnapshot> snapshots = new ArrayList<>();
 
-    @Override
-    public int getRowCount() {
-        return snapshots.size();
-    }
+    private ArrayList<SniperSnapshot> snapshots = new ArrayList<>();
 
     @Override
     public int getColumnCount() {
         return Column.values().length;
+    }
+
+    @Override
+    public int getRowCount() {
+        return snapshots.size();
     }
 
     @Override
@@ -29,18 +29,13 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     }
 
     @Override
-    public String getColumnName(int column) {
-        return Column.at(column).name;
-    }
-
-    @Override
-    public void sniperStateChanged(SniperSnapshot newSniperSnapshot) {
-        int row = rowMathing(newSniperSnapshot);
-        snapshots.set(row, newSniperSnapshot);
+    public void sniperStateChanged(final SniperSnapshot newSnapshot) {
+        int row = rowMatching(newSnapshot);
+        snapshots.set(row, newSnapshot);
         fireTableRowsUpdated(row, row);
     }
 
-    private int rowMathing(SniperSnapshot snapshot) {
+    private int rowMatching(SniperSnapshot snapshot) {
         for (int i = 0; i < snapshots.size(); i++) {
             if (snapshot.isForSameItemAs(snapshots.get(i))) {
                 return i;
@@ -54,6 +49,11 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     }
 
     @Override
+    public String getColumnName(int column) {
+        return Column.at(column).name;
+    }
+
+    @Override
     public void sniperAdded(AuctionSniper sniper) {
         addSniperSnapshot(sniper.getSnapshot());
         sniper.addSniperListener(new SwingThreadSniperListener(this));
@@ -62,6 +62,6 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     private void addSniperSnapshot(SniperSnapshot sniperSnapshot) {
         snapshots.add(sniperSnapshot);
         int row = snapshots.size() - 1;
-        fireTableRowsUpdated(row, row);
+        fireTableRowsInserted(row, row);
     }
 }
