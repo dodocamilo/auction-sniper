@@ -36,6 +36,21 @@
         </dependency>
 
         <dependency>
+            <groupId>com.objogate</groupId>
+            <artifactId>windowlicker-core-DEV</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/windowlicker-core-DEV.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.objogate</groupId>
+            <artifactId>windowlicker-swing-DEV</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/windowlicker-swing-DEV.jar</systemPath>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.jupiter.version}</version>

@@ -16,10 +16,10 @@ class SniperLauncherTest {
 
     @Test
     void addsNewSniperToCollectorAndThenJoinsAuction() {
-        String itemId = "item 123";
-        when(auctionHouse.auctionFor(itemId)).thenReturn(auction);
+        Item item = new Item("item 123", 456);
+        when(auctionHouse.auctionFor(item)).thenReturn(auction);
 
-        launcher.joinAuction(itemId);
+        launcher.joinAuction(item);
 
         verify(auction).addAuctionEventListener(any());
         verify(sniperCollector).addSniper(any());

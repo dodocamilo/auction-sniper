@@ -1,6 +1,7 @@
 package auctionsniper.ui;
 
 import auctionsniper.AuctionSniper;
+import auctionsniper.Item;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
 import auctionsniper.util.Defect;
@@ -22,7 +23,7 @@ public class SnipersTableModelTest {
     private static final String ITEM_ID = "item 0";
     private TableModelListener listener = mock(TableModelListener.class);
     private SnipersTableModel model = new SnipersTableModel();
-    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, null);
+    private final AuctionSniper sniper = new AuctionSniper(new Item(ITEM_ID, 234), null);
 
     @BeforeEach
     void attachModelListener() {
@@ -62,7 +63,7 @@ public class SnipersTableModelTest {
 
     @Test
     void holdsSnipersInAdditionOrder() {
-        AuctionSniper sniper2 = new AuctionSniper("item 1", null);
+        AuctionSniper sniper2 = new AuctionSniper(new Item("item 1", 345), null);
 
         model.sniperAdded(sniper);
         model.sniperAdded(sniper2);
@@ -73,7 +74,7 @@ public class SnipersTableModelTest {
 
     @Test
     void updatesCorrectRowForSniper() {
-        AuctionSniper sniper2 = new AuctionSniper("item 1", null);
+        AuctionSniper sniper2 = new AuctionSniper(new Item("item 1", 345), null);
 
         model.sniperAdded(sniper);
         model.sniperAdded(sniper2);
