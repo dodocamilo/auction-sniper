@@ -10,8 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuctionMessageTranslatorTest {
@@ -37,7 +36,7 @@ public class AuctionMessageTranslatorTest {
 
         translator.processMessage(UNUSED_CHAT, message);
 
-        verify(listener, Mockito.times(1)).currentPrice(192, 7, PriceSource.FromOtherBidder);
+        verify(listener, times(1)).currentPrice(192, 7, PriceSource.FromOtherBidder);
     }
 
     @Test
@@ -47,6 +46,26 @@ public class AuctionMessageTranslatorTest {
 
         translator.processMessage(UNUSED_CHAT, message);
 
-        verify(listener, Mockito.times(1)).currentPrice(234, 5, PriceSource.FromSniper);
+        verify(listener, times(1)).currentPrice(234, 5, PriceSource.FromSniper);
+    }
+
+    @Test
+    void notifiesAuctionFailedWhenBadMessageReceived() {
+        Message message = new Message();
+        message.setBody("a bad message");
+
+        translator.processMessage(UNUSED_CHAT, message);
+
+        verify(listener, times(1)).auctionFailed();
+    }
+
+    @Test
+    void notifiesAuctionFailedWhenEventTypeMissing() {
+        Message message = new Message();
+        message.setBody("SOLVersion: 1.1; CurrentPrice: 234; Increment: 5; Bidder: " + SNIPER_ID + ";");
+
+        translator.processMessage(UNUSED_CHAT, message);
+
+        verify(listener, times(1)).auctionFailed();
     }
 }

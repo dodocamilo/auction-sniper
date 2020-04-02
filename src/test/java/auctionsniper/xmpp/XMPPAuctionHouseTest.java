@@ -60,6 +60,11 @@ class XMPPAuctionHouseTest {
             public void auctionClosed() { auctionWasClosed.countDown(); }
             @Override
             public void currentPrice(int price, int increment, PriceSource priceSource) { }
+
+            @Override
+            public void auctionFailed() {
+
+            }
         };
     }
 }

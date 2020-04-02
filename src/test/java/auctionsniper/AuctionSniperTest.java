@@ -44,7 +44,8 @@ public class AuctionSniperTest {
         verify(sniperListener).sniperStateChanged(new SniperSnapshot(ITEM_ID, 135, 135, WON));
     }
 
-    @Test public void doesNotBidAndReportsLosingIfFirstPriceIsAboveStopPrice() {
+    @Test
+    void doesNotBidAndReportsLosingIfFirstPriceIsAboveStopPrice() {
         final int price = 1233;
         final int increment = 25;
 
@@ -53,7 +54,8 @@ public class AuctionSniperTest {
         verify(sniperListener, atLeast(1)).sniperStateChanged(new SniperSnapshot(ITEM_ID, price, 0, LOSING));
     }
 
-    @Test public void doesNotBidAndReportsLosingIfSubsequentPriceIsAboveStopPrice() {
+    @Test
+    void doesNotBidAndReportsLosingIfSubsequentPriceIsAboveStopPrice() {
         int bid = 123 + 45;
 
         sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
@@ -62,7 +64,8 @@ public class AuctionSniperTest {
         verify(sniperListener, atLeast(1)).sniperStateChanged(new SniperSnapshot(ITEM_ID, 2345, bid, LOSING));
     }
 
-    @Test public void doesNotBidAndReportsLosingIfPriceAfterWinningIsAboveStopPrice() {
+    @Test
+    void doesNotBidAndReportsLosingIfPriceAfterWinningIsAboveStopPrice() {
         final int price = 1233;
         final int increment = 25;
         int bid = 123 + 45;
@@ -86,7 +89,8 @@ public class AuctionSniperTest {
         verify(sniperListener, atLeast(1)).sniperStateChanged(new SniperSnapshot(ITEM_ID, price2, 0, LOSING));
     }
 
-    @Test public void reportsLostIfAuctionClosesWhenLosing() {
+    @Test
+    void reportsLostIfAuctionClosesWhenLosing() {
         sniper.currentPrice(1230, 456, PriceSource.FromOtherBidder);
         sniper.auctionClosed();
 
@@ -112,5 +116,14 @@ public class AuctionSniperTest {
 
         verify(sniperListener, times(1))
                 .sniperStateChanged(new SniperSnapshot(ITEM_ID, 135, 135, WINNING));
+    }
+
+    @Test
+    void reportsFailedIfAuctionFailsWhenBidding() {
+        sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
+        sniper.auctionFailed();
+
+        verify(sniperListener, times(1))
+                .sniperStateChanged(new SniperSnapshot(ITEM_ID, 00, 0, SniperState.FAILED));
     }
 }
