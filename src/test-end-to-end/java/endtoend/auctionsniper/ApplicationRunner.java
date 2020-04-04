@@ -3,8 +3,11 @@ package endtoend.auctionsniper;
 import auctionsniper.Main;
 import auctionsniper.SniperState;
 
+import java.io.IOException;
+
 import static auctionsniper.ui.MainWindow.*;
 import static auctionsniper.ui.SnipersTableModel.textFor;
+import static org.hamcrest.CoreMatchers.containsString;
 
 public class ApplicationRunner {
     public static final String XMPP_HOSTNAME = "localhost";
@@ -12,6 +15,7 @@ public class ApplicationRunner {
     public static final String SNIPER_PASSWORD = "sniper";
     public static final String SNIPER_XMPP_ID = SNIPER_ID + "@" + XMPP_HOSTNAME + "/Auction";
     private AuctionSniperDriver driver;
+    private AuctionLogDriver logDriver = new AuctionLogDriver();
 
     public void startBiddingIn(FakeAuctionServer... auctions) {
         startSniper();
@@ -21,6 +25,8 @@ public class ApplicationRunner {
     }
 
     private void startSniper() {
+        logDriver.clearLog();
+
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
@@ -37,17 +43,6 @@ public class ApplicationRunner {
         driver = new AuctionSniperDriver(1000);
         driver.hasTitle(APPLICATION_TITLE);
         driver.hasColumnTitles();
-    }
-
-    protected static String[] arguments(FakeAuctionServer... auctions) {
-        String[] arguments = new String[auctions.length + 3];
-        arguments[0] = XMPP_HOSTNAME;
-        arguments[1] = SNIPER_ID;
-        arguments[2] = SNIPER_PASSWORD;
-        for (int i = 0; i < auctions.length; i++) {
-            arguments[i + 3] = auctions[i].getItemId();
-        }
-        return arguments;
     }
 
     public void hasShownSniperIsBidding(FakeAuctionServer auction, int lastPrice, int lastBid) {
@@ -85,8 +80,8 @@ public class ApplicationRunner {
         driver.showsSniperStatus(auction.getItemId(), 0, 0, textFor(SniperState.FAILED));
     }
 
-    public void reportsInvalidMessage(FakeAuctionServer auction, String brokenMessage) {
-
+    public void reportsInvalidMessage(FakeAuctionServer auction, String message) throws IOException {
+        logDriver.hasEntry(containsString(message));
     }
 
     public void stop() {

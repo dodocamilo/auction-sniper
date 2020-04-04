@@ -20,7 +20,7 @@ class XMPPAuctionHouseTest {
     private XMPPAuctionHouse auctionHouse;
 
     @BeforeEach
-    void openConnection() throws XMPPException {
+    void openConnection() throws XMPPAuctionException {
         auctionHouse = XMPPAuctionHouse.connect(FakeAuctionServer.XMPP_HOSTNAME, ApplicationRunner.SNIPER_ID,
                 ApplicationRunner.SNIPER_PASSWORD);
     }
